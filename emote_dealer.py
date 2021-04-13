@@ -59,7 +59,7 @@ async def DealEmote(message, emote, filetype = ".jpg"):
     if (os.path.isfile(emote + ".jpg")):
         print("### Dealt a " + emote)
 
-        await message.channel.send(file=discord.File(emote + ".png"))
+        await message.channel.send(file=discord.File(emote + ".jpg"))
 
     # Checks if the emote exists as a PNG
     elif (os.path.isfile(emote + ".png")):
