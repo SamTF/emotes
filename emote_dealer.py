@@ -22,13 +22,13 @@ bot = commands.Bot(command_prefix='emote ')
 async def on_ready():
     print("Ready to spread some emotes!")
     print(bot.user.name)
-    await bot.change_presence(activity=discord.Game('Im back, baby'))   # custom status! (has a new syntax)
+    await bot.change_presence(activity=discord.Game('Im back, baby! B)'))   # custom status! (has a new syntax)
 
 
 
 ### THIS MAKES THE BOT REACT TO MESSAGES WITHOUT THE PREFIX
 @bot.event
-async def on_message(message):
+async def on_message(message):   
     text = message.content.split()
 
     ## handles errors when there's no text
@@ -41,7 +41,6 @@ async def on_message(message):
     # Only one-word commands are registered
     if len(text) > 1: return
 
-
     ### :D & D: - These two emotes are exceptions so we need to use an if statement to check for them
     if emote == "D:":
         await DealEmote(message, "D")
@@ -50,13 +49,20 @@ async def on_message(message):
         await DealEmote(message, "FeelsAmazingMan")
     
     else:
+        print('Calling DealEmote()')
         await DealEmote(message, emote)
 
 
 ### Actually gets the emote file and uploads it
-async def DealEmote(message, emote, filetype = ".png"):
+async def DealEmote(message, emote, filetype = ".jpg"):
+    # Checks if the emote exists as a JPG -> this is way fucking smaller than a PNG and is exactly the same unless the image is transparent
+    if (os.path.isfile(emote + ".jpg")):
+        print("### Dealt a " + emote)
+
+        await message.channel.send(file=discord.File(emote + ".png"))
+
     # Checks if the emote exists as a PNG
-    if (os.path.isfile(emote + ".png")):
+    elif (os.path.isfile(emote + ".png")):
         print("### Dealt a " + emote)
 
         await message.channel.send(file=discord.File(emote + ".png"))
