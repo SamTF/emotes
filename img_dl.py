@@ -1,10 +1,16 @@
 # Downloads images and gifs for the emote dealer to deal
+# NEW !! - Updated to use Slash Commands /// WOW!!
 
 ###### THE IMPORTS      ##########################################################
-import discord
-from discord.ext import commands
-import os
-import urllib.request
+import discord                                          # the main discord module
+from discord.ext import commands                        # commands are nice
+import urllib.request                                   # use to download images from the interwebz
+
+# The Slash Commands module - NEW NEW NEW !!
+from discord_slash import SlashCommand, SlashContext                                                                    # used to create slash commands /
+from discord_slash.utils.manage_commands import create_option                                                           # used to specify the type of argument required
+
+# import os
 
 # The image file extensions supported
 file_extensions = ['.jpg', '.png', '.gif']
@@ -59,6 +65,40 @@ async def add(ctx, arg1, arg2):
 
 
 
+###### SLASH COMMANDS //// #################################################
+slash = SlashCommand(bot, sync_commands=True)                                                                           # Initialises the @slash dectorator - NEEDS THE SYNC COMMANDS to be true
 
+guild_ids = [349267379991347200]                                                                                        # The Server ID - not sure why did this needed
+
+@slash.slash(name='add',                                                                                                # Name of the Slash command / not the function itself
+            guild_ids=guild_ids,                                                                                        # For some reason, this is needed here, but not on the test command?
+            description='Adds an emote to Emote Dealer',                                                                # The command's description in the discord UI
+            options=[                                                                                                   # First time trying multiple options, let's gooo
+                create_option(
+                 name="name",                                                                                           # MUST HAVE the SAME NAME as the argument in the function <- actually READ this after copy-pasting !!!
+                 description="link the to the image",
+                 option_type=3,                                                                                         # 3 = String
+                 required=True
+               ),
+               create_option(
+                 name="url",                                                                                            # MUST HAVE the SAME NAME as the argument in the function
+                 description="link the to the image",
+                 option_type=3,                                                                                         # 3 = String
+                 required=True
+               )
+            ])
+async def _add(ctx, name, url):
+    # calls the helper to download the emote
+    dl_img(url, name)
+
+    #Embed
+    embed = discord.Embed(title="Added a new emote!", description=name, color=0xDD2F2F)
+    embed.set_image(url = url)
+    embed.set_thumbnail(url="https://i.imgur.com/SpVKNOf.png")
+    await ctx.send(embed=embed)
+
+
+
+###### RUNNING THE BOT #################################################
 #Runs the bot on the specified token
 bot.run("NjExOTI3Nzk4MzAyNjM4MTE0.XVa8nQ.NFHSHQLQRxzTwBnKwqjevpMzRFU")
