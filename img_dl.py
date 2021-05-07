@@ -5,12 +5,11 @@
 import discord                                          # the main discord module
 from discord.ext import commands                        # commands are nice
 import urllib.request                                   # use to download images from the interwebz
+import os
 
 # The Slash Commands module - NEW NEW NEW !!
 from discord_slash import SlashCommand, SlashContext                                                                    # used to create slash commands /
 from discord_slash.utils.manage_commands import create_option                                                           # used to specify the type of argument required
-
-# import os
 
 # The image file extensions supported
 file_extensions = ['.jpg', '.png', '.gif']
@@ -67,9 +66,10 @@ async def add(ctx, arg1, arg2):
 
 ###### SLASH COMMANDS //// #################################################
 slash = SlashCommand(bot, sync_commands=True)                                                                           # Initialises the @slash dectorator - NEEDS THE SYNC COMMANDS to be true
-
 guild_ids = [349267379991347200]                                                                                        # The Server ID - not sure why did this needed
 
+
+# Adds an emote
 @slash.slash(name='add',                                                                                                # Name of the Slash command / not the function itself
             guild_ids=guild_ids,                                                                                        # For some reason, this is needed here, but not on the test command?
             description='Adds an emote to Emote Dealer',                                                                # The command's description in the discord UI
@@ -95,7 +95,25 @@ async def _add(ctx, name, url):
     embed = discord.Embed(title="Added a new emote!", description=name, color=0xDD2F2F)
     embed.set_image(url = url)
     embed.set_thumbnail(url="https://i.imgur.com/SpVKNOf.png")
+
     await ctx.send(embed=embed)
+
+
+# Lists all emotes available
+@slash.slash(name="list",
+             description="Lists all available emotes 😃",
+             guild_ids=guild_ids)
+async def _list(ctx):
+    files = os.listdir()                                                                                                # gets all files in current directory
+
+    for file in files:
+        if file.endswith('.py'):                                                                                        # filters out the python scripts
+            files.remove(file)
+        
+    files = [x[:-4] for x in files]                                                                                     # gets a new list where each list value has the file extension deleted, all in one line of code!
+    emotes = ', '.join(files)                                                                                           # joins the array items into a single, comma seperated string
+
+    await ctx.send(f'```{emotes}```')                                                                                   # sends the emote list with monospaced font
 
 
 
