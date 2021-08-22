@@ -11,26 +11,32 @@ import os
 from discord_slash import SlashCommand, SlashContext                                                                    # used to create slash commands /
 from discord_slash.utils.manage_commands import create_option                                                           # used to specify the type of argument required
 
-# The image file extensions supported
-file_extensions = ['.jpg', '.png', '.gif']
+
+###### CONSTANTS        ##########################################################
+file_extensions = ['.jpg', '.png', '.gif']                                                                              # The image file extensions supported
+WEBSITE = 'https://emotes.freelancepolice.org/'                                                                         # website gallery of all the emotes!
+TOKEN_FILE = 'token.txt'                                                                                                # Name of the text file storing the unique Discord bot token (very dangerous, do not share)
 
 ###### HELPER FUNCTIONS ###########################################################
+# Downloads an image from the supplied URL with the requested name
 def dl_img(url, name):
-    file_ext = url[-4:]                                 # gets the last 4 characters in the url (.gif, .png, .jpg hopefully)
-    if (not file_ext in file_extensions):               # checks if the url's extension is valid
+    file_ext = url[-4:]                                                                                                 # gets the last 4 characters in the url (.gif, .png, .jpg hopefully)
+    if not file_ext in file_extensions:                                                                                 # checks if the url's extension is valid
         print(f'INVALID FILE EXTENSION: {url}')
         return
     
-    file_name = name + file_ext                         # combines the desired name with the matching file type
+    file_name = name + file_ext                                                                                         # combines the desired name with the matching file type
 
-    urllib.request.urlretrieve(url, file_name)          # actually downloads the image
+    urllib.request.urlretrieve(url, file_name)                                                                          # actually downloads the image
 
     print(f'Downloaded image from: {url}')
     print(f'Saved image as: {file_name}')
 
+# Gets the Discord bot token
+def get_token(token_file):
+    with open(token_file, 'r') as f:
+        return f.read()
 
-
-print("_____________EmoteAgent INITIALISED_____________")
 
 ###### DISCORD STUFF ############################################################
 ### Creating the bot!
@@ -42,9 +48,7 @@ bot = commands.Bot(command_prefix='emote ')
 async def on_ready():
     print("Ready to add some emotes!")
     print(bot.user.name)
-    #The Bot's status/game he is playing
     await bot.change_presence(activity=discord.Game('Call me'))   # custom status! (has a new syntax)
-
 
 
 ###### COMMANDS ############################################################
@@ -61,7 +65,6 @@ async def add(ctx, arg1, arg2):
     embed.set_image(url = arg2)
     embed.set_thumbnail(url="https://i.imgur.com/SpVKNOf.png")
     await ctx.send(embed=embed)
-
 
 
 ###### SLASH COMMANDS //// #################################################
@@ -99,24 +102,17 @@ async def _add(ctx, name, url):
     await ctx.send(embed=embed)
 
 
-# Lists all emotes available
-@slash.slash(name="list",
+# Links to the website gallery of all the emotes! - 
+@slash.slash(name="emotes",
              description="Lists all available emotes 😃",
              guild_ids=guild_ids)
-async def _list(ctx):
-    files = os.listdir()                                                                                                # gets all files in current directory
-
-    for file in files:
-        if file.endswith('.py'):                                                                                        # filters out the python scripts
-            files.remove(file)
-        
-    files = [x[:-4] for x in files]                                                                                     # gets a new list where each list value has the file extension deleted, all in one line of code!
-    emotes = ', '.join(files)                                                                                           # joins the array items into a single, comma seperated string
-
-    await ctx.send(f'```{emotes}```')                                                                                   # sends the emote list with monospaced font
+async def _emotes(ctx):
+    await ctx.send(WEBSITE)
 
 
 
 ###### RUNNING THE BOT #################################################
-#Runs the bot on the specified token
-bot.run("NjExOTI3Nzk4MzAyNjM4MTE0.XVa8nQ.NFHSHQLQRxzTwBnKwqjevpMzRFU")
+if __name__ == "__main__":
+    print("_____________EmoteAgent INITIALISED_____________")
+    TOKEN = get_token(TOKEN_FILE)
+    bot.run(TOKEN)                                                                                                      # Runs the bot on the specified token
