@@ -7,22 +7,28 @@ from discord.ext import commands
 import os
 
 
-print("_____________EmoteDealer INITIALISED_____________")
+###### CONSTANTS        ##########################################################
+file_extensions = ['.jpg', '.png', '.gif']                                                                              # The image file extensions supported
+TOKEN_FILE = '.emote_dealer.token'                                                                                      # Name of the text file storing the unique Discord bot token (very dangerous, do not share)
+
+# Gets the Discord bot token
+def get_token(token_file):
+    with open(token_file, 'r') as f:
+        return f.read()
+
 
 ###### DISCORD STUFF ############################################################
 ### Creating the bot!
-
-#The command prefix of all the commands
-bot = commands.Bot(command_prefix='emote ')
+bot = commands.Bot()
 
 
 ### EVENTS ###
 # Runs this when the bot becomes online
 @bot.event
 async def on_ready():
-    print("Ready to spread some emotes!")
+    print("Ready to deal some emotes! B)")
     print(bot.user.name)
-    await bot.change_presence(activity=discord.Game('Im back, baby! B)'))   # custom status! (has a new syntax)
+    await bot.change_presence(activity=discord.Game('with your emotions 😎'))                                           # custom status! (has a new syntax)
 
 
 
@@ -31,56 +37,39 @@ async def on_ready():
 async def on_message(message):   
     text = message.content.split()
 
-    ## handles errors when there's no text
+    # Handles errors when there's no text
     try:
         emote = text[0]
     except IndexError:
         emote = "IndexError"
 
-    
     # Only one-word commands are registered
     if len(text) > 1: return
 
-    ### :D & D: - These two emotes are exceptions so we need to use an if statement to check for them
-    if emote == "D:":
-        await DealEmote(message, "D")
-    
-    elif emote == (":D"):
-        await DealEmote(message, "FeelsAmazingMan")
-    
-    else:
-        print('Calling DealEmote()')
-        await DealEmote(message, emote)
+    # Dealing the emote
+    await DealEmote(message, emote)
 
 
 ### Actually gets the emote file and uploads it
-async def DealEmote(message, emote, filetype = ".jpg"):
-    # Checks if the emote exists as a JPG -> this is way fucking smaller than a PNG and is exactly the same unless the image is transparent
-    if (os.path.isfile(emote + ".jpg")):
-        print("### Dealt a " + emote)
-
-        await message.channel.send(file=discord.File(emote + ".jpg"))
-
-    # Checks if the emote exists as a PNG
-    elif (os.path.isfile(emote + ".png")):
-        print("### Dealt a " + emote)
-
-        await message.channel.send(file=discord.File(emote + ".png"))
+async def DealEmote(message, emote):
+    for ext in file_extensions:                                                                                             # Checks if the keyword exists on disk as an emote with any of the file types available
+        filename = f'{emote}{ext}'
         
+        if os.path.isfile(filename):
+            print("### Dealt a " + emote)
+            await message.channel.send(file=discord.File(filename))
     
-    # Otherwise, check for GIFs
-    elif (os.path.isfile(emote + ".gif")):
-        print("### Dealt a " + emote)
-
-        await message.channel.send(file=discord.File(emote + ".gif"))
 
 
 
 
 
-#Runs the bot on the specified token
-bot.run("NTY1Mjc5MzY4MzI3MjAwODIz.XK0JmA.JDmExmgchuerDJLrHW9XwttfRCM")
 
+###### RUNNING THE BOT #################################################
+if __name__ == "__main__":
+    TOKEN = get_token(TOKEN_FILE)
+    print("_____________EmoteDealer INITIALISED_____________")
+    bot.run(TOKEN)
 
 
 

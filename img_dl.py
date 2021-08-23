@@ -15,7 +15,7 @@ from discord_slash.utils.manage_commands import create_option                   
 ###### CONSTANTS        ##########################################################
 file_extensions = ['.jpg', '.png', '.gif']                                                                              # The image file extensions supported
 WEBSITE = 'https://emotes.freelancepolice.org/'                                                                         # website gallery of all the emotes!
-TOKEN_FILE = 'token.txt'                                                                                                # Name of the text file storing the unique Discord bot token (very dangerous, do not share)
+TOKEN_FILE = '.img_dl.token'                                                                                            # Name of the text file storing the unique Discord bot token (very dangerous, do not share)
 
 ###### HELPER FUNCTIONS ###########################################################
 # Downloads an image from the supplied URL with the requested name
