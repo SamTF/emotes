@@ -19,7 +19,7 @@ def get_token(token_file):
 
 ###### DISCORD STUFF ############################################################
 ### Creating the bot!
-bot = commands.Bot()
+bot = commands.Bot(command_prefix='emote ')
 
 
 ### EVENTS ###
