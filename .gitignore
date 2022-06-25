@@ -1,4 +1,4 @@
-#*.png
-#*.jpg
-#*.gif
+*.png
+*.jpg
+*.gif
 *.token
